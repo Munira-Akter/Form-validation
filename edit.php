@@ -1,4 +1,84 @@
 <?php include_once "app/autoload.php";?>
+<?php 
+
+if (isset($_GET['edit_id'])) {
+	$edit_id = $_GET['edit_id'];
+
+	$edit_data = $way -> query ("SELECT * FROM students WHERE id='$edit_id'");
+
+	$all_edit = $edit_data -> fetch_assoc();
+
+
+}
+
+ ?>
+
+ <?php 
+
+
+	/**
+	 * form isseting
+	 */
+
+	if (isset($_POST['add'])) {
+		$edit_id = $_GET['edit_id'];
+		$name = $_POST['name'];
+		$pname = $_POST['pname'];
+		$reg = $_POST['reg'];
+		$url = $_POST['url'];
+		$password = $_POST['password'];
+		$email = $_POST['email'];
+		$cell = $_POST['cell'];
+		$user = $_POST['user'];
+		$age = $_POST['age'];
+		$location = $_POST['location'];
+		$shift = $_POST['shift'];
+		$date = $_POST['date'];
+		$gender = $_POST['gender'];
+
+		/**
+		 * picture validation
+		 */
+
+	//	$filename = $_FILES ['profile'] ['name'];
+	//	$filesize = $_FILES ['profile'] ['size'];
+		//$filetype = $_FILES ['profile'] ['type'];
+		//$filetmp =  $_FILES ['profile'] ['tmp_name'];
+
+		//$unique_file_name =md5(time().rand()) .$filename;
+		
+
+
+		if ( empty($name) || empty($email) || empty($cell) || empty($password) || empty($pname) || empty($reg) || empty($url) || empty($user) || empty($age) || empty($location) || empty($shift) || empty($date) || empty($gender) ) {
+			
+			$msg = validation ('Fill must be required!');
+
+		}else{
+			$photo_name = '';
+           if(empty($_FILES['new_photo']['name'])){
+              $photo_name = $_POST['old_photo'];
+           }else{
+            // Image update
+            $file_name = $_FILES['new_photo']['name'];
+            $file_tmp_name = $_FILES['new_photo']['tmp_name'];
+            $file_size = $_FILES['new_photo']['size'];
+            $photo_name = md5(time() . rand()) . $file_name;
+            move_uploaded_file($file_tmp_name, 'photos/' . $photo_name  );
+        }
+			$way -> query ("UPDATE students SET  name='$name', parent='$pname', registrationno='$reg', url='$url', password='$password', email='$email', cell='$cell', username='$user', age='$age', location='$location', shift='$shift', gender='$gender' , picture ='$photo_name' WHERE id='$edit_id'");
+
+			
+			
+			$msg = validation ('Thanks for Update your data!');
+
+		}
+	}
+
+
+
+
+	 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -159,68 +239,10 @@
 	</style>
 </head>
 <body>
-
-	<?php 
-
-
-	/**
-	 * form isseting
-	 */
-
-	if (isset($_POST['add'])) {
-		$name = $_POST['name'];
-		$pname = $_POST['pname'];
-		$reg = $_POST['reg'];
-		$url = $_POST['url'];
-		$password = $_POST['password'];
-		$email = $_POST['email'];
-		$cell = $_POST['cell'];
-		$user = $_POST['user'];
-		$age = $_POST['age'];
-		$location = $_POST['location'];
-		$shift = $_POST['shift'];
-		$date = $_POST['date'];
-		$gender = $_POST['gender'];
-
-		/**
-		 * picture validation
-		 */
-
-		$filename = $_FILES ['profile'] ['name'];
-		$filesize = $_FILES ['profile'] ['size'];
-		$filetype = $_FILES ['profile'] ['type'];
-		$filetmp =  $_FILES ['profile'] ['tmp_name'];
-
-		$unique_file_name =md5(time().rand()) .$filename;
-		
-
-
-		if ( empty($name) || empty($email) || empty($cell) || empty($password) || empty($pname) || empty($reg) || empty($url) || empty($user) || empty($age) || empty($location) || empty($shift) || empty($date) || empty($gender) ) {
-			
-			$msg = validation ('Fill must be required!');
-
-		}else{
-
-			$way -> query ("INSERT INTO students (name , email , age, url, registrationno,username,birthday,location,shift,gender,password,picture, cell , parent) VALUES ('$name','$email','$age','$url','$reg','$user','$date','$location','$shift','$gender','$password','$unique_file_name','$cell','$pname') ");
-
-			move_uploaded_file($filetmp, 'photos/' .$unique_file_name);
-			
-			$msg = validation ('Thanks for registration!');
-
-		}
-	}
-
-
-
-
-	 ?>
-
-
-
 	<div class="wrap shadow">
 		<div class="card">
 			<div class="card-body">
-				<h2>Student Registration Form</h2> <span><a class="btn btn-lg main-btn" href="student.php">All students</a></span>
+				<h2>Edit student ID</h2> <span><a class="btn btn-lg main-btn" href="student.php">Back</a></span>
 				<?php
 
 				if (isset($msg)) {
@@ -231,19 +253,19 @@
 				<form action="" method="POST" enctype="multipart/form-data" >
 					<div class="form-group">
 						<label for="">Name</label>
-						<input class="form-control" type="text" name="name">
+						<input class="form-control" type="text" name="name" value=" <?php echo $all_edit['name'] ?>">
 					</div>
 					<div class="form-group">
 						<label for="">Parent Name</label>
-						<input class="form-control" type="text" name="pname">
+						<input class="form-control" type="text" name="pname"  value="<?php echo $all_edit['parent'] ?>">
 					</div>
 					<div class="form-group">
 						<label for="">Regitration Number</label>
-						<input class="form-control" type="text" name="reg">
+						<input class="form-control" type="text" name="reg"  value="<?php echo $all_edit['registrationno'] ?>">
 					</div>
 					<div class="form-group">
 						<label for="">Protfolio link</label>
-						<input class="form-control" type="text" name="url">
+						<input class="form-control" type="text" name="url"  value="<?php echo $all_edit['url'] ?>">
 						<?php
 
 						if (isset($url_msg)) {
@@ -254,7 +276,7 @@
 					</div>
 					<div class="form-group">
 						<label for="">Email</label>
-						<input class="form-control" type="text" name="email">
+						<input class="form-control" type="text" name="email"  value="<?php echo $all_edit['email'] ?>">
 						<?php
 
 						if (isset($email_msg)) {
@@ -265,11 +287,11 @@
 					</div>
 					<div class="form-group">
 						<label for="">Cell</label>
-						<input class="form-control" type="text" name="cell">
+						<input class="form-control" type="text" name="cell"  value=" <?php echo $all_edit['cell'] ?>">
 					</div>
 					<div class="form-group">
 						<label for="">Username</label>
-						<input class="form-control" type="text" name="user">
+						<input class="form-control" type="text" name="user"  value="<?php echo $all_edit['username'] ?>">
 					</div>
 					<div class="form-group">
 						<label for="">Password</label>
@@ -284,7 +306,7 @@
 					</div>
 					<div class="form-group">
 						<label for="">Age</label>
-						<input class="form-control" type="text" name="age">
+						<input class="form-control" type="text" name="age"  value=" <?php echo $all_edit['age'] ?>">
 							<?php
 
 						if (isset($age_msg)) {
@@ -296,10 +318,10 @@
 
 					<div class="form-group">
 						<label for="">Location</label>
-						<select class="form-control" name="location">
-							<option value="" selected>--select--</option>
-							<option  value="Dhaka" >Dhaka</option>
-							<option  value="chittagong" >chittagong</option>
+						<select class="form-control" name="location" value=" <?php echo $all_edit['location'] ?>">
+							<option  value="">--select--</option>
+							<option value="Dhaka" <?php if($all_edit['location'] == 'Dhaka') { echo "selected"; }?> >Dhaka</option>
+							<option  value="chittagong" <?php if($all_edit['location'] == 'chittagong') { echo "selected";  }  ?>>chittagong</option>
 							<option value="sylhet">sylhet</option>
 							<option value="Rongpur">Rongpur</option>
 							<option value="Mymansingh">Mymansingh</option>
@@ -309,8 +331,12 @@
 						
 					</div>
 					<div class="form-group">
+						<img style="height: 100px; width: 100px; border-radius:50%;background: #12c2e9; background: -webkit-linear-gradient(to right, #f64f59, #c471ed, #12c2e9); background: linear-gradient(to right, #f64f59, #c471ed, #12c2e9); padding: 5px;" src="photos/<?php echo $all_edit['picture'] ?>" alt="">
+						<input type="hidden" name="old_photo" value="<?php echo $all_edit['picture']; ?>">
+					</div>
+					<div class="form-group">
 						<label for="">Profile Picture</label>
-						<input class="form-control-file" type="file" name="profile">
+						<input class="form-control-file" type="file" name="new_photo">
 					</div>
 					<div class="form-group">
 						<label for="">Massage</label> <br>
@@ -318,10 +344,10 @@
 					</div>
 					<div class="form-group">
 						<label for="">Shift</label> <br>
-						<select class="form-control" name="shift">
-							<option value="" selected>--select--</option>
-							<option value="Day" >Day</option>
-							<option value="Night" >Night</option>
+						<select class="form-control" name="shift" >
+							<option value="">--select--</option>
+							<option  <?php if($all_edit['shift'] == 'Day') { echo "selected";  }  ?> value="Day"    >Day</option>
+							<option  <?php if($all_edit['shift'] == 'Night') { echo "selected";  }  ?> value="Night"  >Night</option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -331,19 +357,19 @@
 					<div class="form-group">
 						<label for="">Gander</label> <br>
 						<div class="form-check-inline">
-							  <input class="form-check-input" type="radio" name="gender" id="exampleRadios1" value="Male" checked>
+							  <input <?php if($all_edit['gender'] == 'Male') { echo "checked";  }  ?>  class="form-check-input" type="radio" name="gender" id="exampleRadios1" value="Male" >
 							  <label class="form-check-label" for="exampleRadios1">
 							    Male
 							  </label>
 							</div>
 							<div class="form-check-inline">
-							  <input class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="Female">
+							  <input <?php if($all_edit['gender'] == 'Female') { echo "checked";  }  ?>  class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="Female">
 							  <label class="form-check-label" for="exampleRadios2">
 							    Female
 							  </label>
 							</div>
 							<div class="form-check-inline">
-							  <input class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="Custom">
+							  <input <?php if($all_edit['gender'] == 'Custom') { echo "checked";  }  ?>  class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="Custom">
 							  <label class="form-check-label" for="exampleRadios2">
 							    Custom
 							  </label>
@@ -377,10 +403,9 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<input class="btn " type="submit" value="Sign Up" name="add">
+						<input class="btn " type="submit" value="update student" name="add">
 					
 					
-						<input class="btn " type="reset" value="reset" name="reset">
 						</div>
 				</form>
 			</div>
